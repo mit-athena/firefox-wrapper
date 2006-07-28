@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: firefox.sh,v 1.1 2006-06-01 16:40:14 rbasch Exp $
+# $Id: firefox.sh,v 1.2 2006-07-28 21:06:20 rbasch Exp $
 # Firefox wrapper script for Athena.
 
 moz_progname=firefox
@@ -228,7 +228,8 @@ if [ "${MOZ_NO_REMOTE+set}" = "set" ]; then
 else
   # See if there is a running instance of Firefox.
   user="${LOGNAME:+-u $LOGNAME}"
-  $moz_remote $user -a "$moz_progname" "ping()" >/dev/null 2>&1
+  $firefox_libdir/run-mozilla.sh $moz_remote $user -a "$moz_progname" \
+    "ping()" >/dev/null 2>&1
   case $? in
   0)
     found_running=true
