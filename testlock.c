@@ -21,7 +21,7 @@ int main(int argc, char **argv)
   filename = argv[1];
 
   /* Open the file. */
-  fd = open(filename, O_RDWR, 0600);
+  fd = open(filename, O_RDONLY);
   if (fd == -1)
     {
       fprintf(stderr, "%s: Cannot open %s: %s\n", progname, filename,
