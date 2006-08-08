@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: firefox.sh,v 1.2 2006-07-28 21:06:20 rbasch Exp $
+# $Id: firefox.sh,v 1.3 2006-08-08 21:12:32 rbasch Exp $
 # Firefox wrapper script for Athena.
 
 moz_progname=firefox
@@ -30,7 +30,27 @@ SunOS)
   ;;
 
 Linux)
-  firefox_libdir=/usr/lib/firefox
+  # Red Hat uses a version-dependent directory.  Determine it by
+  # parsing relevant variable settings from their wrapper.
+  MOZ_LIB_DIR=
+  MOZ_DIST_BIN=
+  eval `egrep '^MOZ_LIB_DIR=|^MOZ_DIST_BIN=' /usr/bin/firefox 2>/dev/null`
+  if [ -n "$MOZ_DIST_BIN" -a -x "$MOZ_DIST_BIN/firefox-bin" ]; then
+    firefox_libdir="$MOZ_DIST_BIN"
+  else
+    # There was a problem parsing the script.  Fall back to using
+    # the most recent library directory containing a firefox binary.
+    for d in `ls -dt /usr/lib/firefox-*` ; do
+      if [ -x "$d/firefox-bin" ]; then
+        firefox_libdir="$d"
+        break
+      fi
+    done
+  fi
+  if [ -z "$firefox_libdir" ]; then
+    echo "firefox: Cannot determine Firefox library directory." 1>&2
+    exit 1
+  fi
   java_plugin_dir=/usr/java/jdk/jre/plugin/i386/ns7
   ;;
 esac
@@ -126,31 +146,77 @@ get_profdir () {
     }' $inifile
 }
 
-# Prompt the user on how to deal with an existing lock file when no
-# running Firefox window can be found, and take action accordingly.
+# Prompt the user on how to deal with an existing locked profile when
+# no running Firefox window can be found, and take action accordingly.
 # Parameter 1 is the profile directory path.
-# If the function returns, the lock file will have been removed per the
-# user's choice, and the caller should continue.  Otherwise, the
+# If the function returns, the lock file(s) will have been removed per
+# the user's choice, and the caller should continue.  Otherwise, the
 # process will exit.
 dispose_lock () {
   lockfile="$1/.parentlock"
   locklink="$1/lock"
   # Extract the IP address and PID from the contents of the symlink.
+  # Also note whether firefox used fnctl() to lock .parentlock,
+  # which is indicated with a leading '+' in the PID.
   eval `ls -l $locklink | awk '{
     if (split($NF, a, ":") == 2)
-      printf("lock_ip=%s ; lock_pid=%d\n", a[1], int(a[2])); }'`
+      printf("lock_ip=%s ; lock_pid=%d ; use_fcntl=%d\n",
+              a[1], int(a[2]), (substr(a[2], 1, 1) == "+")); }'`
 
   # If we cannot recognize the link contents, just continue.
   if [ -z "$lock_ip" ]; then
     return 0
   fi
 
-  # Get the host name of the lock holder.
-  lock_host=`host $lock_ip | \
+  local=false
+  if [ "$use_fcntl" -ne 0 ]; then
+    # An fcntl()-style lock was acquired; check it.
+    if [ -f "$lockfile" ]; then
+      # testlock tests whether there is a write lock on the file.
+      # If so, it outputs the locker's PID, and exits with status 2.
+      # If the lock is held by a process running on another host, the
+      # PID will be 0.
+      pid=`$testlock "$lockfile" 2>/dev/null`
+      if [ $? -ne 2 ]; then
+        # File is not locked, remove the symlink and continue.
+        rm -f "$locklink"
+        return 0
+      fi
+      # The file is locked.  If the lock is held by a process on
+      # this machine, the locker pid will be non-0.
+      if [ "$pid" -ne 0 ]; then
+        local=true
+      fi
+    fi
+  else
+    # Handle an old-style (symlink) lock.
+    my_host=`hostname`
+    if [ "$lock_ip" = "`host $my_host | awk '{ print $NF; }'`" ]; then
+      # Lock is held on this machine.
+      local=true
+    fi
+  fi
+
+  if [ "$local" = true ]; then
+    # The lock is held by a process on this machine; check if it is
+    # still running.
+    if kill -0 $lock_pid 2>/dev/null ; then
+      # Lock is held by a running process.
+      lock_host="this machine"
+    else
+      # Process is no longer running.  Nuke the lock and continue.
+      rm -f "$lockfile" "$locklink"
+      return 0
+    fi
+  else
+    # The lock is held by a process on another machine.  Get its
+    # host name.
+    lock_host=`host $lock_ip | \
       sed -n -e 's/^.*domain name pointer \(.*\)$/\1/p' | \
       sed -e 's/\.*$//' | tr '[A-Z]' '[a-z]'`
-  if [ -z "$lock_host" ]; then
-    lock_host=$lock_ip
+    if [ -z "$lock_host" ]; then
+      lock_host="$lock_ip"
+    fi
   fi
 
   dialog_text="
@@ -172,7 +238,7 @@ dispose_lock () {
 
   case $? in
   0)
-    rm -f "$lockfile"
+    rm -f "$lockfile" "$locklink"
     ;;
   *)
     exit 1
@@ -254,32 +320,12 @@ if [ $found_running != true ]; then
   if [ -n "$profdir" ]; then
     # firefox now uses fcntl()-style locking on .parentlock, but an
     # apparent openafs bug leaves the lock set after the program exits.
-    # Fortunately, it still maintains the "lock" symlink, so use its
-    # presence to help detect a stale lock.
-    lockfile="$profdir/.parentlock"
+    # Fortunately, it still maintains the "lock" symlink (which may
+    # also have been left from running a pre-1.5.0 firefox on the
+    # profile), so use its presence to help detect a stale lock.
     if [ -h "$profdir/lock" ]; then
-      # The symlink exists.  See if the profile is actually locked.
-      lock_pid=`$testlock "$lockfile" 2>/dev/null`
-      if [ $? -eq 2 ]; then
-        # The file is locked.  If the lock is held by a process on
-        # this machine, the locker pid will be non-0, so check if
-        # the process is still running.
-        if [ "$lock_pid" -eq 0 ]; then
-          # The profile is locked by a process running on another
-          # machine.  Ask the user how to deal with it.
-          dispose_lock "$profdir"
-        else
-          if kill -0 $lock_pid 2>/dev/null ; then
-            # Lock is held by a running process.
-            :
-          else
-            # The process holding the lock is no longer running.
-            # Assume this is the result of the openafs bug noted
-            # above; nuke the lock and continue.
-            rm -f "$lockfile"
-          fi
-        fi
-      fi
+      # The symlink exists, so the profile is (potentially) locked.
+      dispose_lock "$profdir"
     else
       # The symlink is gone, so just nuke the lock file, to work around
       # the aforementioned openafs bug.
