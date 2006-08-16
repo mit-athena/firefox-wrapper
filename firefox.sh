@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: firefox.sh,v 1.3 2006-08-08 21:12:32 rbasch Exp $
+# $Id: firefox.sh,v 1.4 2006-08-16 21:56:19 rbasch Exp $
 # Firefox wrapper script for Athena.
 
 moz_progname=firefox
@@ -279,6 +279,14 @@ fi
 if [ ! -d "$prof_parent" ]; then
   mkdir -p "$prof_parent"
   /bin/athena/fs setacl "$prof_parent" system:anyuser none system:authuser none
+fi
+
+# We want Firefox to download files for helper applications to
+# /var/tmp instead of /tmp, so that users have a better chance
+# of retrieving them later.
+if [ -z "$TMPDIR" ]; then
+  TMPDIR=/var/tmp
+  export TMPDIR
 fi
 
 # If the user specified any option, skip the check for a running
