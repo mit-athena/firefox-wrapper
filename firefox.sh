@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: firefox.sh,v 1.4 2006-08-16 21:56:19 rbasch Exp $
+# $Id: firefox.sh,v 1.5 2006-09-06 18:08:19 rbasch Exp $
 # Firefox wrapper script for Athena.
 
 moz_progname=firefox
@@ -27,6 +27,7 @@ SunOS)
   fi
 
   java_plugin_dir=/usr/java/jre/plugin/sparc/ns7
+  awk=nawk
   ;;
 
 Linux)
@@ -52,6 +53,7 @@ Linux)
     exit 1
   fi
   java_plugin_dir=/usr/java/jdk/jre/plugin/i386/ns7
+  awk=awk
   ;;
 esac
 
@@ -84,15 +86,6 @@ export MOZ_PLUGIN_PATH
 
 # Get the profile directory path, by parsing the profiles.ini file.
 get_profdir () {
-  case `uname` in
-  SunOS)
-    awk=nawk
-    ;;
-  *)
-    awk=awk
-    ;;
-  esac
-  
   inifile="$prof_parent/profiles.ini"
   if [ ! -s "$inifile" ]; then
     return 1
@@ -158,7 +151,7 @@ dispose_lock () {
   # Extract the IP address and PID from the contents of the symlink.
   # Also note whether firefox used fnctl() to lock .parentlock,
   # which is indicated with a leading '+' in the PID.
-  eval `ls -l $locklink | awk '{
+  eval `ls -l $locklink | $awk '{
     if (split($NF, a, ":") == 2)
       printf("lock_ip=%s ; lock_pid=%d ; use_fcntl=%d\n",
               a[1], int(a[2]), (substr(a[2], 1, 1) == "+")); }'`
@@ -191,7 +184,7 @@ dispose_lock () {
   else
     # Handle an old-style (symlink) lock.
     my_host=`hostname`
-    if [ "$lock_ip" = "`host $my_host | awk '{ print $NF; }'`" ]; then
+    if [ "$lock_ip" = "`host $my_host | $awk '{ print $NF; }'`" ]; then
       # Lock is held on this machine.
       local=true
     fi
