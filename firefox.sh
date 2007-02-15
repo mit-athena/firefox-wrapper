@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: firefox.sh,v 1.5 2006-09-06 18:08:19 rbasch Exp $
+# $Id: firefox.sh,v 1.6 2007-02-15 15:00:50 rbasch Exp $
 # Firefox wrapper script for Athena.
 
 moz_progname=firefox
@@ -26,7 +26,10 @@ SunOS)
     export XSUNTRANSPORT XSUNSMESIZE
   fi
 
-  java_plugin_dir=/usr/java/jre/plugin/sparc/ns7
+  # The Java plugin is in the locally-installed JDK package.  Other
+  # plugins (e.g. Flash) live in infoagents on Solaris.
+  plugin_path=/usr/java/jre/plugin/sparc/ns7
+  plugin_path=$plugin_path:/mit/infoagents/arch/@sys/lib/mozilla/plugins
   awk=nawk
   ;;
 
@@ -52,7 +55,12 @@ Linux)
     echo "firefox: Cannot determine Firefox library directory." 1>&2
     exit 1
   fi
-  java_plugin_dir=/usr/java/jdk/jre/plugin/i386/ns7
+
+  # On Linux, the Java plugin is installed as part of the JDK, and
+  # other plugins (e.g. Flash) are installed in the Mozilla plugins
+  # directory.
+  plugin_path=/usr/java/jdk/jre/plugin/i386/ns7
+  plugin_path=$plugin_path:/usr/lib/mozilla/plugins
   awk=awk
   ;;
 esac
@@ -76,10 +84,6 @@ if [ "${MOZ_PLUGIN_PATH_OVERRIDE+set}" = set ]; then
   MOZ_PLUGIN_PATH="$MOZ_PLUGIN_PATH_OVERRIDE"
 else
   # Append our plugin path to the user's setting (if any).
-  # The Java plugin is in the locally-installed JRE package, and its
-  # directory is set above; others (besides the default "null" plugin)
-  # live in infoagents.
-  plugin_path=$java_plugin_dir:/mit/infoagents/arch/@sys/lib/mozilla/plugins
   MOZ_PLUGIN_PATH=${MOZ_PLUGIN_PATH:+"$MOZ_PLUGIN_PATH:"}$plugin_path
 fi
 export MOZ_PLUGIN_PATH
