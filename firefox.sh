@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: firefox.sh,v 1.6 2007-02-15 15:00:50 rbasch Exp $
+# $Id: firefox.sh,v 1.7 2007-06-06 16:08:50 rbasch Exp $
 # Firefox wrapper script for Athena.
 
 moz_progname=firefox
@@ -34,27 +34,7 @@ SunOS)
   ;;
 
 Linux)
-  # Red Hat uses a version-dependent directory.  Determine it by
-  # parsing relevant variable settings from their wrapper.
-  MOZ_LIB_DIR=
-  MOZ_DIST_BIN=
-  eval `egrep '^MOZ_LIB_DIR=|^MOZ_DIST_BIN=' /usr/bin/firefox 2>/dev/null`
-  if [ -n "$MOZ_DIST_BIN" -a -x "$MOZ_DIST_BIN/firefox-bin" ]; then
-    firefox_libdir="$MOZ_DIST_BIN"
-  else
-    # There was a problem parsing the script.  Fall back to using
-    # the most recent library directory containing a firefox binary.
-    for d in `ls -dt /usr/lib/firefox-*` ; do
-      if [ -x "$d/firefox-bin" ]; then
-        firefox_libdir="$d"
-        break
-      fi
-    done
-  fi
-  if [ -z "$firefox_libdir" ]; then
-    echo "firefox: Cannot determine Firefox library directory." 1>&2
-    exit 1
-  fi
+  firefox_libdir=/usr/lib/firefox
 
   # On Linux, the Java plugin is installed as part of the JDK, and
   # other plugins (e.g. Flash) are installed in the Mozilla plugins
