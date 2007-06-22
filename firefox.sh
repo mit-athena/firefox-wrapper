@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: firefox.sh,v 1.7 2007-06-06 16:08:50 rbasch Exp $
+# $Id: firefox.sh,v 1.8 2007-06-22 15:13:03 rbasch Exp $
 # Firefox wrapper script for Athena.
 
 moz_progname=firefox
@@ -26,19 +26,14 @@ SunOS)
     export XSUNTRANSPORT XSUNSMESIZE
   fi
 
-  # The Java plugin is in the locally-installed JDK package.  Other
-  # plugins (e.g. Flash) live in infoagents on Solaris.
   plugin_path=/usr/java/jre/plugin/sparc/ns7
-  plugin_path=$plugin_path:/mit/infoagents/arch/@sys/lib/mozilla/plugins
+  plugin_path=$plugin_path:/usr/sfw/lib/mozilla/plugins
   awk=nawk
   ;;
 
 Linux)
   firefox_libdir=/usr/lib/firefox
 
-  # On Linux, the Java plugin is installed as part of the JDK, and
-  # other plugins (e.g. Flash) are installed in the Mozilla plugins
-  # directory.
   plugin_path=/usr/java/jdk/jre/plugin/i386/ns7
   plugin_path=$plugin_path:/usr/lib/mozilla/plugins
   awk=awk
