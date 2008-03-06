@@ -1,0 +1,21 @@
+Index: debathena-firefox-wrapper-9.4.39+cvs20070623/firefox.sh
+===================================================================
+--- debathena-firefox-wrapper-9.4.39+cvs20070623.orig/firefox.sh	2008-03-03 20:18:58.000000000 -0500
++++ debathena-firefox-wrapper-9.4.39+cvs20070623/firefox.sh	2008-03-03 20:43:32.000000000 -0500
+@@ -32,10 +32,13 @@
+   ;;
+ 
+ Linux)
+-  firefox_libdir=/usr/lib/iceweasel
+ 
+-  plugin_path=/usr/java/jdk/jre/plugin/i386/ns7
+-  plugin_path=$plugin_path:/usr/lib/mozilla/plugins
++  if [ $(lsb_release --short --id) == "Debian" ]; then
++    firefox_libdir=/usr/lib/iceweasel
++  else
++    firefox_libdir=/usr/lib/firefox
++  fi
++
+   awk=awk
+   ;;
+ esac
