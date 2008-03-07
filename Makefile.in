@@ -30,7 +30,7 @@ check:
 
 install:
 	${top_srcdir}/mkinstalldirs ${DESTDIR}${bindir}
-	${INSTALL_SCRIPT} firefox.sh ${DESTDIR}${bindir}/firefox
+	${INSTALL_SCRIPT} firefox.sh ${DESTDIR}${bindir}/firefox.debathena
 	${INSTALL_PROGRAM} testlock ${DESTDIR}${bindir}
 
 clean:

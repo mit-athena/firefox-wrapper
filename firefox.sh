@@ -12,33 +12,11 @@ prof_parent=$HOME/.mozilla/firefox
 # applications.
 lockers="infoagents acro"
 
-case `uname` in
-SunOS)
-  firefox_libdir=/opt/sfw/lib/firefox
-  LD_LIBRARY_PATH=/usr/athena/lib
-  export LD_LIBRARY_PATH
-
-  # On Solaris, use the X server's shared memory transport for better
-  # performance.
-  if [ -z "$XSUNTRANSPORT" ]; then
-    XSUNTRANSPORT=shmem
-    XSUNSMESIZE=512
-    export XSUNTRANSPORT XSUNSMESIZE
-  fi
-
-  plugin_path=/usr/java/jre/plugin/sparc/ns7
-  plugin_path=$plugin_path:/usr/sfw/lib/mozilla/plugins
-  awk=nawk
-  ;;
-
-Linux)
+if [ $(lsb_release --short --id) == "Debian" ]; then
+  firefox_libdir=/usr/lib/iceweasel
+else
   firefox_libdir=/usr/lib/firefox
-
-  plugin_path=/usr/java/jdk/jre/plugin/i386/ns7
-  plugin_path=$plugin_path:/usr/lib/mozilla/plugins
-  awk=awk
-  ;;
-esac
+fi
 
 # mozilla-xremote-client sends a command to a running Mozilla
 # application using X properties.  Its possible return codes are:
@@ -51,7 +29,7 @@ moz_remote=$firefox_libdir/mozilla-xremote-client
 
 # testlock is used to test whether the profile directory's lock file
 # is actually locked.
-testlock=/usr/athena/bin/testlock
+testlock=/usr/bin/testlock
 
 # Set the plugin path.  We allow the user to skip loading our
 # standard plugins via the MOZ_PLUGIN_PATH_OVERRIDE variable.
@@ -69,7 +47,7 @@ get_profdir () {
   if [ ! -s "$inifile" ]; then
     return 1
   fi
-  $awk -F= -v parent="$prof_parent" '
+  awk -F= -v parent="$prof_parent" '
     BEGIN {
       nprofiles = 0;
       use_default = 1;
@@ -130,7 +108,7 @@ dispose_lock () {
   # Extract the IP address and PID from the contents of the symlink.
   # Also note whether firefox used fnctl() to lock .parentlock,
   # which is indicated with a leading '+' in the PID.
-  eval `ls -l $locklink | $awk '{
+  eval `ls -l $locklink | awk '{
     if (split($NF, a, ":") == 2)
       printf("lock_ip=%s ; lock_pid=%d ; use_fcntl=%d\n",
               a[1], int(a[2]), (substr(a[2], 1, 1) == "+")); }'`
@@ -163,7 +141,7 @@ dispose_lock () {
   else
     # Handle an old-style (symlink) lock.
     my_host=`hostname`
-    if [ "$lock_ip" = "`host $my_host | $awk '{ print $NF; }'`" ]; then
+    if [ "$lock_ip" = "`host $my_host | awk '{ print $NF; }'`" ]; then
       # Lock is held on this machine.
       local=true
     fi
@@ -236,7 +214,7 @@ fi
 
 # Attach needed lockers.
 for locker in $lockers ; do
-  /bin/athena/attach -h -n -q $locker
+  /bin/attach -h -n -q $locker
 done
 
 # Configure fontconfig to use fonts for MathML.
@@ -250,7 +228,7 @@ fi
 # the ACL appropriately.
 if [ ! -d "$prof_parent" ]; then
   mkdir -p "$prof_parent"
-  /bin/athena/fs setacl "$prof_parent" system:anyuser none system:authuser none
+  /usr/bin/fs setacl "$prof_parent" system:anyuser none system:authuser none
 fi
 
 # We want Firefox to download files for helper applications to
@@ -265,7 +243,7 @@ fi
 # Firefox, and invoke the program now.
 case "$1" in
 -*)
-  exec $firefox_libdir/firefox "$@"
+  exec /usr/bin/firefox.debathena-orig "$@"
   ;;
 esac
 

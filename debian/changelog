@@ -1,3 +1,9 @@
+debathena-firefox-wrapper (10.0.0-0debathena1) unstable; urgency=low
+
+  * Patches folded into main source.
+
+ -- Greg Hudson <ghudson@equal-rites.mit.edu>  Fri, 07 Mar 2008 11:02:08 -0500
+
 debathena-firefox-wrapper (9.4.39+cvs20070623-0debathena1) unstable; urgency=low
 
   * Initial release.

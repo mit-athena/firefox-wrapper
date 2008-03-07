@@ -20,7 +20,6 @@ else
 
     ifeq ($(LSB_ID), Ubuntu)
 fix-iceweasel-path: FORCE
-	sed -i 's,/usr/lib/iceweasel,/usr/lib/firefox,' debian/debathena-firefox-wrapper/usr/bin/firefox.debathena
     else
 	$(error Unrecognized distribution ID $(LSB_ID).)
     endif
@@ -31,7 +30,6 @@ endif
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 include /usr/share/cdbs/1/rules/debathena-divert.mk
-include /usr/share/cdbs/1/rules/patchsys-quilt.mk
 
 clean::
 	rm -f configure
