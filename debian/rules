@@ -4,34 +4,14 @@ DEB_AUTO_UPDATE_DEBIAN_CONTROL = 1
 DEB_AUTO_UPDATE_AUTOCONF = 2.50
 
 DEBATHENA_DIVERT_FILES_debathena-firefox-wrapper += \
-	/usr/bin/firefox.debathena
-
-binary-fixup/debathena-firefox-wrapper:: fix-iceweasel-path
-
-LSB_ID = $(shell lsb_release --short --id)
-ifeq ($(LSB_ID), Debian)
-
-fix-iceweasel-path: FORCE
-	ln -sf firefox.debathena debian/debathena-firefox-wrapper/usr/bin/iceweasel.debathena
-DEBATHENA_DIVERT_FILES_debathena-firefox-wrapper += \
+	/usr/bin/firefox.debathena \
 	/usr/bin/iceweasel.debathena
-
-else
-
-    ifeq ($(LSB_ID), Ubuntu)
-fix-iceweasel-path: FORCE
-    else
-	$(error Unrecognized distribution ID $(LSB_ID).)
-    endif
-
-endif
-
 
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 include /usr/share/cdbs/1/rules/debathena-divert.mk
 
+DEB_DH_LINK_ARGS += usr/bin/firefox.debathena usr/bin/iceweasel.debathena
+
 clean::
 	rm -f configure
-
-FORCE:
