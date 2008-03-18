@@ -12,7 +12,7 @@ prof_parent=$HOME/.mozilla/firefox
 # applications.
 lockers="infoagents acro"
 
-if [ $(lsb_release --short --id) == "Debian" ]; then
+if [ $(lsb_release --short --id) = "Debian" ]; then
   firefox_libdir=/usr/lib/iceweasel
 else
   firefox_libdir=/usr/lib/firefox
