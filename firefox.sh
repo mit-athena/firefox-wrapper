@@ -292,4 +292,4 @@ if [ $found_running != true ]; then
   fi
 fi
 
-exec $firefox_libdir/firefox "$@"
+exec /usr/bin/firefox.debathena-orig "$@"
