@@ -1,3 +1,9 @@
+debathena-firefox-wrapper (10.0.1-0debathena2) unstable; urgency=low
+
+  * Convert to use new config-package-dev interfaces.
+
+ -- Tim Abbott <tabbott@mit.edu>  Tue, 22 Apr 2008 03:48:38 -0400
+
 debathena-firefox-wrapper (10.0.1-0debathena1) unstable; urgency=low
 
   * firefox.sh: Fix typo in test for distribution.
