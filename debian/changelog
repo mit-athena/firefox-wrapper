@@ -1,3 +1,9 @@
+debathena-firefox-wrapper (10.0.1-0debathena3) unstable; urgency=low
+
+  * Fix missing DEB_DIVERT_EXTENSION.
+
+ -- Tim Abbott <tabbott@mit.edu>  Tue, 29 Apr 2008 23:28:29 -0400
+
 debathena-firefox-wrapper (10.0.1-0debathena2) unstable; urgency=low
 
   * Convert to use new config-package-dev interfaces.

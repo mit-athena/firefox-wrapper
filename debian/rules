@@ -3,6 +3,7 @@
 DEB_AUTO_UPDATE_DEBIAN_CONTROL = 1
 DEB_AUTO_UPDATE_AUTOCONF = 2.50
 
+DEB_DIVERT_EXTENSION=.debathena
 DEB_DIVERT_FILES_debathena-firefox-wrapper += \
 	/usr/bin/firefox.debathena \
 	/usr/bin/iceweasel.debathena
