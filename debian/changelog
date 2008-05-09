@@ -1,3 +1,10 @@
+debathena-firefox-wrapper (10.0.2-0debathena1) unstable; urgency=low
+
+  * Handle a profile directory name containing whitespace, when
+  parsing the contents of the lock symlink.
+
+ -- Robert Basch <rbasch@mit.edu>  Fri, 09 May 2008 17:30:11 -0400
+
 debathena-firefox-wrapper (10.0.1-0debathena3) unstable; urgency=low
 
   * Fix missing DEB_DIVERT_EXTENSION.

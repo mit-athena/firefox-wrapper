@@ -108,7 +108,7 @@ dispose_lock () {
   # Extract the IP address and PID from the contents of the symlink.
   # Also note whether firefox used fnctl() to lock .parentlock,
   # which is indicated with a leading '+' in the PID.
-  eval `ls -l $locklink | awk '{
+  eval `ls -l "$locklink" | awk '{
     if (split($NF, a, ":") == 2)
       printf("lock_ip=%s ; lock_pid=%d ; use_fcntl=%d\n",
               a[1], int(a[2]), (substr(a[2], 1, 1) == "+")); }'`
