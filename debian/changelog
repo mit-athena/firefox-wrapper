@@ -1,3 +1,10 @@
+debathena-firefox-wrapper (10.0.3) unstable; urgency=low
+
+  * Punt Debian version component; we are no longer treating wrapper
+    scripts as portable software.
+
+ -- Greg Hudson <ghudson@mit.edu>  Tue, 03 Jun 2008 12:44:08 -0400
+
 debathena-firefox-wrapper (10.0.2-0debathena1) unstable; urgency=low
 
   * Handle a profile directory name containing whitespace, when
