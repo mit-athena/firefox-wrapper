@@ -12,21 +12,6 @@ prof_parent=$HOME/.mozilla/firefox
 # applications.
 lockers="infoagents acro"
 
-if [ $(lsb_release --short --id) = "Debian" ]; then
-  firefox_libdir=/usr/lib/iceweasel
-else
-  firefox_libdir=/usr/lib/firefox
-fi
-
-# mozilla-xremote-client sends a command to a running Mozilla
-# application using X properties.  Its possible return codes are:
-#   0  success
-#   1  failed to connect to the X server
-#   2  no running window found
-#   3  failed to send command
-#   4  usage error
-moz_remote=$firefox_libdir/mozilla-xremote-client
-
 # testlock is used to test whether the profile directory's lock file
 # is actually locked.
 testlock=/usr/bin/testlock
@@ -184,7 +169,7 @@ dispose_lock () {
   without starting Firefox.  
 "
 
-  zenity --title "Firefox profile locked" --warning --text "$dialog_text"
+  zenity --title "Firefox profile locked" --question --text "$dialog_text"
 
   case $? in
   0)
@@ -228,7 +213,8 @@ fi
 # the ACL appropriately.
 if [ ! -d "$prof_parent" ]; then
   mkdir -p "$prof_parent"
-  /usr/bin/fs setacl "$prof_parent" system:anyuser none system:authuser none
+  /usr/bin/fs setacl "$prof_parent" system:anyuser none \
+    system:authuser none >/dev/null 2>&1
 fi
 
 # We want Firefox to download files for helper applications to
@@ -250,18 +236,18 @@ esac
 if [ "${MOZ_NO_REMOTE+set}" = "set" ]; then
   found_running=false
 else
-  # See if there is a running instance of Firefox.
+  # See if there is a running instance of Firefox, by trying to
+  # "ping" it using X properties.
   user="${LOGNAME:+-u $LOGNAME}"
-  $firefox_libdir/run-mozilla.sh $moz_remote $user -a "$moz_progname" \
+  /usr/bin/firefox.debathena-orig $user -a "$moz_progname" -remote \
     "ping()" >/dev/null 2>&1
   case $? in
   0)
+    # We successfully pinged it.
     found_running=true
     ;;
   2)
     # This is the expected status when there is no running firefox window.
-    # Clear the error condition.
-    remote_error=
     found_running=false
     ;;
   *)

@@ -1,3 +1,17 @@
+debathena-firefox-wrapper (10.0.4) unstable; urgency=low
+
+  * Use firefox's -remote option to ping a running instance, as
+  the availability and location of mozilla-xremote-client varies
+  between distributions and versions.
+  * Use a zenity question dialog instead of a warning, since in
+  later zenity versions the warning does not include a Cancel
+  button.
+  * Redirect fs output to /dev/null.
+  * Add dependencies on zenity, debathena-attach.
+  * Remove the dependency on lsb-release.
+
+ -- Robert Basch <rbasch@mit.edu>  Sun, 06 Jul 2008 13:23:54 -0400
+
 debathena-firefox-wrapper (10.0.3) unstable; urgency=low
 
   * Punt Debian version component; we are no longer treating wrapper

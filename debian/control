@@ -2,12 +2,12 @@ Source: debathena-firefox-wrapper
 Section: debathena/web
 Priority: extra
 Maintainer: Debian-Athena Project <debathena@mit.edu>
-Build-Depends: cdbs (>= 0.4.23-1.1), autotools-dev, debhelper (>= 4.2.0), autoconf, config-package-dev (>= 4.5~)
+Build-Depends: cdbs (>= 0.4.23-1.1), debhelper (>= 4.2.0), config-package-dev (>= 4.5~)
 Standards-Version: 3.7.2
 
 Package: debathena-firefox-wrapper
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, iceweasel | firefox, lsb-release
+Depends: ${shlibs:Depends}, ${misc:Depends}, iceweasel | firefox, zenity, debathena-attach
 Description: Wrapper to configure Mozilla Firefox for Debathena
  This package provides a wrapper for the stock Mozilla Firefox web
  browser.  It handles disposing of stale profile locks, as well as
