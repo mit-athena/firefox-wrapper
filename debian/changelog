@@ -1,3 +1,12 @@
+debathena-firefox-wrapper (10.0.1-0debathena4) unstable; urgency=low
+
+  * Remove DEB_AUTO_UPDATE_DEBIAN_CONTROL.
+  * Change "Debian-Athena Project" to "Debathena Project".
+  * Remove debian/control from version control.
+  * Clean up debian/copyright.
+
+ -- Tim Abbott <tabbott@mit.edu>  Sat, 24 Jan 2009 14:35:25 -0500
+
 debathena-firefox-wrapper (10.0.4) unstable; urgency=low
 
   * Use firefox's -remote option to ping a running instance, as
