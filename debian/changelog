@@ -1,4 +1,4 @@
-debathena-firefox-wrapper (10.0.1-0debathena4) unstable; urgency=low
+debathena-firefox-wrapper (10.0.5) unstable; urgency=low
 
   * Remove DEB_AUTO_UPDATE_DEBIAN_CONTROL.
   * Change "Debian-Athena Project" to "Debathena Project".
