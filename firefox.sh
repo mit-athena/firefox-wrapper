@@ -8,23 +8,9 @@ moz_progname=firefox
 # Profile directory's parent.
 prof_parent=$HOME/.mozilla/firefox
 
-# The following lockers need to be attached to run plugins and helper
-# applications.
-lockers="infoagents acro"
-
 # testlock is used to test whether the profile directory's lock file
 # is actually locked.
 testlock=/usr/bin/testlock
-
-# Set the plugin path.  We allow the user to skip loading our
-# standard plugins via the MOZ_PLUGIN_PATH_OVERRIDE variable.
-if [ "${MOZ_PLUGIN_PATH_OVERRIDE+set}" = set ]; then
-  MOZ_PLUGIN_PATH="$MOZ_PLUGIN_PATH_OVERRIDE"
-else
-  # Append our plugin path to the user's setting (if any).
-  MOZ_PLUGIN_PATH=${MOZ_PLUGIN_PATH:+"$MOZ_PLUGIN_PATH:"}$plugin_path
-fi
-export MOZ_PLUGIN_PATH
 
 # Get the profile directory path, by parsing the profiles.ini file.
 get_profdir () {
@@ -125,11 +111,20 @@ dispose_lock () {
     fi
   else
     # Handle an old-style (symlink) lock.
-    my_host=`hostname`
-    if [ "$lock_ip" = "`host $my_host | awk '{ print $NF; }'`" ]; then
-      # Lock is held on this machine.
-      local=true
-    fi
+    case "$lock_ip" in
+    127.*)
+      if ! /usr/bin/fs whichcell "$locklink" > /dev/null 2>&1 ; then
+        local=true
+      fi
+      ;;
+    *)
+      my_host=`hostname`
+      if [ "$lock_ip" = "`host $my_host | awk '{ print $NF; }'`" ]; then
+        # Lock is held on this machine.
+        local=true
+      fi
+      ;;
+    esac
   fi
 
   if [ "$local" = true ]; then
@@ -146,9 +141,16 @@ dispose_lock () {
   else
     # The lock is held by a process on another machine.  Get its
     # host name.
-    lock_host=`host $lock_ip | \
-      sed -n -e 's/^.*domain name pointer \(.*\)$/\1/p' | \
-      sed -e 's/\.*$//' | tr '[A-Z]' '[a-z]'`
+    case "$lock_ip" in
+    127.*)
+      lock_host="another machine"
+      ;;
+    *)
+      lock_host=`host $lock_ip | \
+        sed -n -e 's/^.*domain name pointer \(.*\)$/\1/p' | \
+        sed -e 's/\.*$//' | tr '[A-Z]' '[a-z]'`
+      ;;
+    esac
     if [ -z "$lock_host" ]; then
       lock_host="$lock_ip"
     fi
@@ -195,17 +197,6 @@ Please run Firefox on your local machine rather than on a dialup.
 Thank you.
 
 EOF
-fi
-
-# Attach needed lockers.
-for locker in $lockers ; do
-  /bin/attach -h -n -q $locker
-done
-
-# Configure fontconfig to use fonts for MathML.
-if [ -z "$FONTCONFIG_FILE" ]; then
-  FONTCONFIG_FILE=/mit/infoagents/share/fonts/fonts.conf
-  export FONTCONFIG_FILE
 fi
 
 # If this is the first time the user has run firefox, create

@@ -1,3 +1,16 @@
+debathena-firefox-wrapper (10.0.6) unstable; urgency=low
+
+  * Handle net 127 IP addresses in profile lock symlink.
+  * Remove setting of plugin path.
+  * Remove configuring fontconfig for MathML fonts in infoagents
+    locker (which should no longer be used, and do not seem to work
+    anyway).
+  * Remove attaching of lockers (infoagents, acro); these should
+    not be used anymore.
+  * Update dependencies: add bind9-host, remove debathena-attach
+  
+ -- Robert Basch <rbasch@mit.edu>  Fri, 13 Mar 2009 17:59:18 -0400
+
 debathena-firefox-wrapper (10.0.5) unstable; urgency=low
 
   * Remove DEB_AUTO_UPDATE_DEBIAN_CONTROL.
