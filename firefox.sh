@@ -204,8 +204,8 @@ fi
 # the ACL appropriately.
 if [ ! -d "$prof_parent" ]; then
   mkdir -p "$prof_parent"
-  /usr/bin/fs setacl "$prof_parent" system:anyuser none \
-    system:authuser none >/dev/null 2>&1
+  /usr/bin/fs setacl "$prof_parent" "$ATHENA_USER" all \
+    -clear >/dev/null 2>&1
 fi
 
 # We want Firefox to download files for helper applications to

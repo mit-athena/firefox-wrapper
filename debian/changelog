@@ -1,3 +1,10 @@
+debathena-firefox-wrapper (10.0.7) unstable; urgency=low
+
+  * When creating the profile directory, whitelist the user in the AFS ACL
+    instead of blacklisting system:anyuser and system:authuser.
+
+ -- Evan Broder <broder@mit.edu>  Wed, 22 Jul 2009 13:23:17 -0400
+
 debathena-firefox-wrapper (10.0.6) unstable; urgency=low
 
   * Handle net 127 IP addresses in profile lock symlink.
