@@ -42,18 +42,18 @@ get_profdir () {
   
     END {
       count = 0;
-      default = "";
+      default_id = "";
       for (i = 0; i < nprofiles; i++) {
         id = "Profile" i;
         if (a[id, "name"] != "" && a[id, "isrelative"] != "" &&
             a[id, "path"] != "") {
           count++;
           if (int(a[id, "default"]) != 0)
-            default = id;
+            default_id = id;
         }
       }
-      if (use_default != 0 && default != "")
-        id = default;
+      if (use_default != 0 && default_id != "")
+        id = default_id;
       else if (nprofiles == 1 && count == 1)
         id = "Profile0";
       else

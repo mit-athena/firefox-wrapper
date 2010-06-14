@@ -1,3 +1,11 @@
+debathena-firefox-wrapper (10.0.8) unstable; urgency=low
+
+  * Rename the "default" variable used in the wrapper's awk
+    script for parsing profiles.ini, as it is now a reserved
+    keyword in new awk versions.  (Trac: #605)
+
+ -- Robert Basch <rbasch@mit.edu>  Mon, 14 Jun 2010 16:21:46 -0400
+
 debathena-firefox-wrapper (10.0.7) unstable; urgency=low
 
   * When creating the profile directory, whitelist the user in the AFS ACL
