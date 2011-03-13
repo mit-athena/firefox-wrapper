@@ -269,15 +269,4 @@ if [ $found_running != true ]; then
   fi
 fi
 
-FIRSTRUNFILE="$HOME/.config/edu.mit.ist.firefox.firstrun"
-if ! [ -f "$FIRSTRUNFILE" ]; then
-    touch "$FIRSTRUNFILE"
-    zenity --warning --title="Firefox on Athena" --text="When running Firefox \
-on Athena, it is important that you completely quit Firefox (by choosing \
-\"Quit\" from the \"File\" menu) before logging out.  Failure to do so can \
-corrupt your MIT Certificates and result in you being unable to visit any \
-sites using SSL (e.g. Gmail, Amazon, etc.). \
-\n\n
-Click \"OK\" to continue."
-fi
 exec /usr/bin/firefox.debathena-orig "$@"
