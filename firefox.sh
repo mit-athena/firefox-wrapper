@@ -183,6 +183,50 @@ dispose_lock () {
   esac
 }
 
+# Deal with a corrupted security database
+fix_profile () {
+  dialog_ok_text="
+  Your Firefox profile was corrupted and has been repaired. 
+  You will need to obtain new MIT Personal Certificates.
+
+  To avoid this problem in the future, please be sure to 
+  completely quit Firefox (File->Quit or Ctrl-Q) before 
+  logging out of an Athena workstation.
+
+  To continue using Firefox, click \"OK\".
+"
+  dialog_err_text="
+  Your Firefox profile is corrupted and cannot be repaired.
+  Please try running the following command in the Terminal:
+
+         mv ~/.mozilla ~/.mozilla-old
+
+  Then re-launch Firefox.  
+
+  Be sure to completely quit Firefox before 
+  logging out of Athena.
+"
+  dbdir="$1"
+  files="cert8.db key3.db secmod.db"
+  found=0
+  for f in $files; do
+    f="$dbdir/$f"
+    if [ -f "$f" ]; then
+	found=1
+    fi
+    rm -f $f
+  done
+  if ! modutil -create -force -dbdir "$dbdir"; then
+    zenity --error --title "Firefox profile corrupted" --text "$dialog_err_text"
+    exit 1
+  else
+    if [ $found -eq 1 ]; then
+      zenity --info --title "Firefox profile repaired" --text "$dialog_ok_text"
+    fi
+  fi
+}
+
+
 # Give a warning if we're running on a dialup machine.
 if [ -x /etc/athena/dialuptype ]; then
   cat << \EOF
@@ -265,6 +309,10 @@ if [ $found_running != true ]; then
       # The symlink is gone, so just nuke the lock file, to work around
       # the aforementioned openafs bug.
       rm -f "$profdir/.parentlock"
+    fi
+    # Now check for corrupted profiles
+    if hash modutil > /dev/null 2>&1 && ! modutil -list -dbdir $profdir > /dev/null 2>&1; then
+	fix_profile "$profdir"
     fi
   fi
 fi

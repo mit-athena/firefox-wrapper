@@ -1,3 +1,11 @@
+debathena-firefox-wrapper (10.0.9) unstable; urgency=low
+
+  * Use modutil to detect when a user has borked their security database
+    (Trac: #698)
+  * Add dependency on libnss3-tools for the above change
+
+ -- Jonathan Reed <jdreed@mit.edu>  Tue, 14 Jun 2011 13:00:17 -0400
+
 debathena-firefox-wrapper (10.0.8) unstable; urgency=low
 
   * Rename the "default" variable used in the wrapper's awk

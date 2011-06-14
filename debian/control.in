@@ -7,7 +7,7 @@ Standards-Version: 3.7.2
 
 Package: debathena-firefox-wrapper
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, iceweasel | firefox, zenity, bind9-host
+Depends: ${shlibs:Depends}, ${misc:Depends}, iceweasel | firefox, zenity, bind9-host, libnss3-tools
 Description: Wrapper to configure Mozilla Firefox for Debathena
  This package provides a wrapper for the stock Mozilla Firefox web
  browser.  It handles disposing of stale profile locks, as well as
