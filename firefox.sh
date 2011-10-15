@@ -171,7 +171,7 @@ dispose_lock () {
   without starting Firefox.  
 "
 
-  zenity --title "Firefox profile locked" --question --text "$dialog_text"
+  zenity --title "Firefox profile locked" --question --text "$dialog_text" --ok-label="OK" --cancel-label="Cancel"
 
   case $? in
   0)

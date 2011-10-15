@@ -1,3 +1,10 @@
+debathena-firefox-wrapper (10.0.10) unstable; urgency=low
+
+  * Force the dialog buttons to be "OK" and "Cancel". (At some point
+    they started defaulting to "Yes" and "No".)
+
+ -- Geoffrey Thomas <geofft@mit.edu>  Fri, 14 Oct 2011 21:35:12 -0400
+
 debathena-firefox-wrapper (10.0.9) unstable; urgency=low
 
   * Use modutil to detect when a user has borked their security database
