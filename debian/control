@@ -2,8 +2,8 @@ Source: debathena-firefox-wrapper
 Section: debathena/web
 Priority: extra
 Maintainer: Debathena Project <debathena@mit.edu>
-Build-Depends: @cdbs@
-Standards-Version: 3.7.2
+Build-Depends: cdbs, debhelper, dh-buildinfo, config-package-dev (>= 5.0~)
+Standards-Version: 3.9.3
 
 Package: debathena-firefox-wrapper
 Architecture: any
